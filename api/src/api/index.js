@@ -12,6 +12,7 @@ const {
 
 const users = require("./controllers/users.controller");
 const sessions = require("./controllers/sessions.controller");
+const units = require("./controllers/units.controller");
 
 router.use(cors);
 router.use(session);
@@ -32,6 +33,10 @@ router.patch(
   users.update
 );
 router.delete("/users/:id", isAuthenticated, isAdmin, users.delete);
+
+//UNIT CRUD
+router.post("/users/me/units", isAuthenticated, units.create);
+router.get("/users/me/units", isAuthenticated, units.list);
 
 router.use(errors.routeNotFound);
 router.use(errors.globalErrorHandler);

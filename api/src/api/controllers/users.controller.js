@@ -17,7 +17,7 @@ module.exports.detail = async (req, res, next) => {
     return res.json(req.sessionUser);
   }
 
-  const user = await User.findById(req.params.id);
+  const user = await User.findById(req.params.id).populate("units");
 
   if (user) res.json(user);
   else next(UserNotFound);

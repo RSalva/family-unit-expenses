@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
-const config = require("config");
+const config = require("../config");
+require("./unitUser.model");
+require("./expense.model");
 
 const schema = new mongoose.Schema(
   {
@@ -32,9 +34,10 @@ const schema = new mongoose.Schema(
 );
 
 schema.virtual("users", {
-  ref: "User",
+  ref: "UnitUser",
   localField: "_id",
   foreignField: "unit",
+  justOne: false,
 });
 
 schema.virtual("expenses", {

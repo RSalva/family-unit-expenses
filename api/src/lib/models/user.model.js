@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const config = require("../config");
+require("./unitUser.model");
 
 const bcrypt = require("bcryptjs");
 const SALT_WORK_FACTOR = 10;
@@ -69,9 +70,10 @@ const schema = new mongoose.Schema(
 );
 
 schema.virtual("units", {
-  ref: "Unit",
+  ref: "UnitUser",
   localField: "_id",
   foreignField: "user",
+  justOne: false,
 });
 
 schema.pre("save", function (next) {
