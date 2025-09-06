@@ -68,6 +68,12 @@ const schema = new mongoose.Schema(
   }
 );
 
+schema.virtual("units", {
+  ref: "Unit",
+  localField: "_id",
+  foreignField: "user",
+});
+
 schema.pre("save", function (next) {
   const user = this;
 

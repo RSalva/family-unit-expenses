@@ -11,7 +11,7 @@ const externalFormats = require("convict-format-with-validator");
 convict.addFormats(externalFormats);
 
 convict.addFormat({
-  name: "mongo-uri",
+  name: "mongodb-uri",
   validate: function (uri) {
     if (!validator.isURL(uri, { protocols: ["mongodb", "mongodb+srv"] })) {
       throw new Error("Invalid mongodb uri");
@@ -88,3 +88,7 @@ const config = convict({
     env: "ADMIN_EMAILS",
   },
 });
+
+config.validate({ allowed: "strict" });
+
+module.exports = config;

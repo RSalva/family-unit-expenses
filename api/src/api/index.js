@@ -11,7 +11,6 @@ const {
 } = require("./middlewares");
 
 const users = require("./controllers/users.controller");
-const addresses = require("./controllers/addresses.controller");
 const sessions = require("./controllers/sessions.controller");
 
 router.use(cors);

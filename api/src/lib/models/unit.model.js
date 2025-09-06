@@ -1,0 +1,48 @@
+const mongoose = require("mongoose");
+const config = require("config");
+
+const schema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, "Unit name is required"],
+      trim: true,
+      minlength: [3, "Unit name must be at least 3 characters long"],
+      maxlength: [50, "Unit name can not exceed 50 characters"],
+    },
+    description: {
+      type: String,
+      required: [true, "Description is required"],
+      trim: true,
+      maxlength: [250, "Description cannot exceed 250 characters"],
+    },
+  },
+  {
+    timestamps: true,
+    toJSON: {
+      virtuals: true,
+      transform: (doc, ret) => {
+        ret.id = ret._id;
+        delete ret._id;
+        delete ret.__v;
+        return ret;
+      },
+    },
+  },
+);
+
+schema.virtual("users", {
+  ref: "User",
+  localField: "_id",
+  foreignField: "unit",
+});
+
+schema.virtual("expenses", {
+  ref: "Expense",
+  localField: "_id",
+  foreignField: "unit",
+});
+
+const Unit = mongoose.model("Unit", schema);
+
+module.exports = Unit;

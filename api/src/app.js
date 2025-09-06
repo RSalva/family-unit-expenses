@@ -14,7 +14,7 @@ app.use(express.json());
 // Load API routes
 app.use("/api/v1", require("./api"));
 // Load React APP
-app.use(require("./web"));
+//app.use(require("./web"));
 
 if (process.env.NODE_ENV !== "test") {
   app.listen(config.get("port"), () =>
