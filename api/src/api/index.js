@@ -37,6 +37,8 @@ router.delete("/users/:id", isAuthenticated, isAdmin, users.delete);
 //UNIT CRUD
 router.post("/users/me/units", isAuthenticated, units.create);
 router.get("/users/me/units", isAuthenticated, units.list);
+router.get("/users/me/units/:id", isAuthenticated, units.detail);
+router.patch("/users/me/units/:id", isAuthenticated, units.update)
 
 router.use(errors.routeNotFound);
 router.use(errors.globalErrorHandler);

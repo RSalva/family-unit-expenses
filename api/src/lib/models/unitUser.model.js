@@ -3,12 +3,12 @@ const config = require("../config");
 
 const schema = new mongoose.Schema(
   {
-    userId: {
+    user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: [true, "User is required"],
     },
-    unitId: {
+    unit: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Unit",
       required: [true, "Unit is required"],
@@ -35,6 +35,7 @@ const schema = new mongoose.Schema(
     },
   },
 );
+
 
 const UnitUser = mongoose.model("UnitUser", schema);
 
