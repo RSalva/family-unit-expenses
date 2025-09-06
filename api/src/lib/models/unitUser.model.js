@@ -3,12 +3,12 @@ const config = require("../config");
 
 const schema = new mongoose.Schema(
   {
-    user: {
+    userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: [true, "User is required"],
     },
-    unit: {
+    unitId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Unit",
       required: [true, "Unit is required"],
@@ -22,7 +22,18 @@ const schema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     }
-  }
+  },
+  {
+    timestamps: true,
+    toJSON: {
+      transform: (doc, ret) => {
+        ret.unitUserReferenceId = ret._id;
+        delete ret._id;
+        delete ret.__v;
+        return ret;
+      },
+    },
+  },
 );
 
 const UnitUser = mongoose.model("UnitUser", schema);
