@@ -27,3 +27,4 @@ module.exports.delete = async (req, res, next) => {
   res.clearCookie('connect.sid');
   res.status(204).send();
 }
+

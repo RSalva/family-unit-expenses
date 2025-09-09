@@ -29,18 +29,19 @@ const schema = new mongoose.Schema(
       ref: "Unit",
       required: true,
     },
-    isRecurrent: {
-      type: Boolean,
-      default: false,
-    },
-    recurrence: {
-      type: String,
-      enum: ["daily", "weekly", "monthly", "yearly", null],
-      default: null,
-    },
     createdAt: {
       type: Date,
       default: Date.now
+    },
+    users: {
+      type: [{
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          required: true,
+        },
+      }],
+      validate: [arrayLimit, '{PATH} exceeds the limit of 50']
     }
   },
   {
@@ -55,6 +56,10 @@ const schema = new mongoose.Schema(
     },
   },
 );
+
+function arrayLimit(val) {
+  return val.length <= 50;
+}
 
 const Expense = mongoose.model("Expense", schema);
 

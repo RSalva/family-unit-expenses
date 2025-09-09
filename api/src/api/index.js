@@ -39,6 +39,12 @@ router.post("/users/me/units", isAuthenticated, units.create);
 router.get("/users/me/units", isAuthenticated, units.list);
 router.get("/users/me/units/:id", isAuthenticated, units.detail);
 router.patch("/users/me/units/:id", isAuthenticated, units.update)
+//router.delete("/users/me/units/:id", isAuthenticated, units.delete);
+
+// UNITUSERS CRUD
+router.post("/users/me/units/:id/users/", isAuthenticated, units.addUser);
+router.delete("/users/me/units/:id/users/:userId", isAuthenticated, units.removeUser);
+
 
 router.use(errors.routeNotFound);
 router.use(errors.globalErrorHandler);
