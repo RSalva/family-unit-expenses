@@ -108,17 +108,7 @@ module.exports.addUser = async (req, res, next) => {
   const user = await UnitUser.findOne({ unit: unitId, user: userId });
   if (user) throw(UserAlreadyExists);
   
-  const requestingUser = await UnitUser.findOne({
-    unit: unitId, 
-    user: req.sessionUser.id,
-  });
-  if (
-    !requestingUser || 
-    (
-      requestingUser.role !== "admin" && 
-      requestingUser.role !== "creator"
-    )
-  ) throw(ForbiddenAction);
+  if (! await userHasPermission(req.sessionUser.id, unitId, ["admin", "creator"])) throw(ForbiddenAction);
 
   const newUnitUser = await UnitUser.create({
     user: userId,
@@ -137,20 +127,28 @@ module.exports.removeUser = async (req, res, next) => {
   const unit = await Unit.findById(unitId);
   if (!unit) throw(UnitNotFound);
 
-
-  const requestingUser = await UnitUser.findOne({
-    unit: unitId, 
-    user: req.sessionUser.id,
-  });
-  if (
-    !requestingUser || 
-    (
-      requestingUser.role !== "admin" && 
-      requestingUser.role !== "creator"
-    )
-  ) throw(ForbiddenAction);
+  if (! await userHasPermission(req.sessionUser.id, unitId, ["admin", "creator"])) throw(ForbiddenAction);
 
   const userUnit = await UnitUser.findOneAndDelete({ unit: unitId, user: userId });
   if (!userUnit) throw(UserNotInUnit);
   else res.status(204).send();
 };
+
+module.exports.delete = async (req, res, next) => {
+  const unitId = req.params.id;
+
+  const unit = await Unit.findById(unitId);
+  if (!unit) throw(UnitNotFound);
+
+  if (! await userHasPermission(req.sessionUser.id, unitId, ["admin", "creator"])) throw(ForbiddenAction);
+  
+  await UnitUser.deleteMany({ unit: unitId });
+  await Unit.findByIdAndDelete(unitId);
+  res.status(204).send();
+};
+
+// Function to check if a user has permission in a unit
+const userHasPermission = async (userId, unitId, roles) {
+  const userUnit = await UnitUser.findOne({ unit: unitId, user: userId });
+  return userUnit && roles.includes(userUnit.role);
+}
