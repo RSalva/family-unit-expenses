@@ -18,6 +18,12 @@ const schema = new mongoose.Schema(
       trim: true,
       maxlength: [250, "Description cannot exceed 250 characters"],
     },
+    icon: {
+      type: String,
+      default: function() {
+        return `https://picsum.photos/id/${this.name}/200/200`;
+      }
+    },
   },
   {
     timestamps: true,

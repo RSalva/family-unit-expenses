@@ -76,7 +76,7 @@ module.exports.create = async (req, res, next) => {
 };
 
 module.exports.update = async (req, res, next) => {
-  const permittedParams = ["description", "email"];
+  const permittedParams = ["description", "name"];
 
   // never trust input data. whitelist params!!!
   Object.keys(req.body).forEach((key) => {
@@ -86,16 +86,20 @@ module.exports.update = async (req, res, next) => {
   });
 
   if (req.file) {
-    req.body.avatar = req.file.path;
+    req.body.icon = req.file.path;
   }
 
-  const unit = await Unit.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
-
-  if (user) res.json(user);
-  else next(UserNotFound);
+  const updatedUnit = await Unit.findByIdAndUpdate(
+    req.params.id,
+    {
+      description: req.body.description || unit.description,
+      name: req.body.name || unit.name,
+      icon: req.body.icon || unit.icon,
+    },
+    { new: true, runValidators: true }
+  );
+  if (updatedUnit) res.status(200).json(updatedUnit);
+  else next(UnitNotFound);
 };
 
 module.exports.addUser = async (req, res, next) => {
@@ -148,7 +152,7 @@ module.exports.delete = async (req, res, next) => {
 };
 
 // Function to check if a user has permission in a unit
-const userHasPermission = async (userId, unitId, roles) {
+const userHasPermission = async (userId, unitId, roles) => {
   const userUnit = await UnitUser.findOne({ unit: unitId, user: userId });
   return userUnit && roles.includes(userUnit.role);
-}
+};

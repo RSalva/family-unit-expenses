@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const config = require("../config");
+require("./user.model");
+require("./unit.model");
 
 const schema = new mongoose.Schema(
   {
@@ -12,7 +14,7 @@ const schema = new mongoose.Schema(
     },
     cost: {
       type: Number,
-      required: [true, "Description is required"],
+      required: [true, "Cost is required"],
     },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
@@ -34,13 +36,8 @@ const schema = new mongoose.Schema(
       default: Date.now
     },
     users: {
-      type: [{
-        user: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User",
-          required: true,
-        },
-      }],
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "User",
       validate: [arrayLimit, '{PATH} exceeds the limit of 50']
     }
   },
