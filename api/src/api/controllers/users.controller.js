@@ -24,11 +24,20 @@ module.exports.detail = async (req, res, next) => {
 };
 
 module.exports.create = async (req, res, next) => {
+  const permittedParams = ["name", "username", "email", "password"];
+
+  // never trust input data. whitelist params!!!
+  Object.keys(req.body).forEach((key) => {
+    if (!permittedParams.includes(key)) {
+      delete req.body[key];
+    }
+  });
+
   const { username } = req.body;
   let user = await User.findOne({ username });
   if (user) next(UsernameAlreadyExists);
   else {
-    // never trust input data. whitelist params!!!
+    
 
     user = await User.create({
       name: req.body.name,
