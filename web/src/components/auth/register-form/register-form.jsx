@@ -8,7 +8,6 @@ function RegisterForm({ className = "", to = "/login" }) {
 
   const onSubmitRegister = async (user) => {
     try {
-      console.log(user);
       await UsersApi.register(user);
       alert("Registration successful! You can now log in.");
       navigate(to);

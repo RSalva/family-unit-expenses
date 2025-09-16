@@ -1,29 +1,4 @@
-import axios from 'axios';
-import { LS_USER } from '../contexts/auth';
-
-const http = axios.create({
-  baseURL: import.meta.env.VITE_BASE_API_URL,
-  withCredentials: true,
-});
-
-// Refactor to use with units
-// Depending on the error received, redirect to the page needed
-http.interceptors.request.use(
-  (res) => res.data,
-  (error) => {
-    if (
-      error.response?.status === 401 &&
-      location.pathname !== '/login'
-    ) {
-      localStorage.clear(LS_USER);
-      location.replace('/login');
-    } else if (error.response?.status === 403) {
-      location.replace('/forbidden');
-    } else {
-      return Promise.reject(error);
-    }
-  }
-);
+import http from './api-service';
 
 // getUnits
 // getUnitById

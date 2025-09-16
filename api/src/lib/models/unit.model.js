@@ -21,7 +21,7 @@ const schema = new mongoose.Schema(
     icon: {
       type: String,
       default: function() {
-        return `https://picsum.photos/id/${this.name}/200/200`;
+        return `https://picsum.photos/seed/${this.name}/200/200`;
       }
     },
   },

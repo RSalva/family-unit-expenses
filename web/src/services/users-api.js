@@ -1,27 +1,4 @@
-import axios from 'axios';
-import { LS_USER } from '../contexts/auth';
-
-const http = axios.create({
-  baseURL: 'http://localhost:3000/api/v1',
-  withCredentials: true,
-});
-
-http.interceptors.request.use(
-  (res) => res.data,
-  (error) => {
-    if (
-      error.response?.status === 401 &&
-      location.pathname !== '/login'
-    ) {
-      localStorage.clear(LS_USER);
-      location.replace('/login');
-    } else if (error.response?.status === 403) {
-      location.replace('/forbidden');
-    } else {
-      return Promise.reject(error);
-    }
-  }
-);
+import http from './api-service'
 
 export const register = (user) => {
   return http.post('/users', user);

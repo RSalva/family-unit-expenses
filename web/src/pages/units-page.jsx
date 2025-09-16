@@ -1,11 +1,11 @@
 import { PageLayout } from "../components/layouts";
-//import { UsersList } from "../components/users";
+import { UnitsList } from "../components/units";
 
 function UnitsPage() {
   return (
     <PageLayout>
       <h4 className="fw-light mb-2">Units List</h4>
-      // <UnitsList />
+      <UnitsList />
     </PageLayout>
   )
 };

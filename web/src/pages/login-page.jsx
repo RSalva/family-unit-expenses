@@ -8,7 +8,7 @@ function LoginPage() {
       <div className="row justify-content-center">
         <div className="col-12 col-md-6 col-lg-4">
           <h3 className="fw-light">Login</h3>
-          <LoginForm to="/users" />
+          <LoginForm to="/profile" />
           <hr className="my-2"/>
           <Link to="/register" className="btn btn-secondary fw-light w-100 btn-sm">REGISTER</Link>
         </div>
