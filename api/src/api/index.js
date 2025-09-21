@@ -43,7 +43,7 @@ router.patch("/users/me/units/:id", isAuthenticated, units.update)
 router.delete("/users/me/units/:id", isAuthenticated, units.delete);
 
 // UNITUSERS CRUD  
-router.post("/users/me/units/:id/users/", isAuthenticated, units.addUser);
+router.post("/users/me/units/:id/users/", isAuthenticated, units.addUsers);
 router.delete("/users/me/units/:id/users/:userId", isAuthenticated, units.removeUser);
 
 // EXPENSES CRUD

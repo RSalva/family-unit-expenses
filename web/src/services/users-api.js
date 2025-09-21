@@ -19,3 +19,8 @@ export const listUsers = () => {
 export const deleteUser = (id) => {
   return http.delete(`/users/${id}`);
 };
+
+export const searchUsers = async (query) => {
+  const response = await http.get(`/users?search=${query}`);
+  return response.data;
+};

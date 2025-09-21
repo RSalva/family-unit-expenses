@@ -5,3 +5,5 @@ export { default as UnitsPage } from './units-page';
 export { default as HomePage } from './home-page';
 export { default as RegisterPage } from './register-page';
 export { default as ProfilePage } from './profile-page';
+export { default as UnitDetailPage } from './unit-detail-page';
+export { default as UnitCreationPage } from "./unit-creation-page";

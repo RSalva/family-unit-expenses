@@ -28,10 +28,14 @@ export const deleteUnit = (id) => {
   return http.delete(`/users/me/units/${id}`);
 };
 
-export const addUserToUnit = (unitId, user) => {
-  return http.post(`/users/me/units/${unitId}/users/`, user);
+export const addUsersToUnit = (unitId, users) => {
+  return http.post(`/users/me/units/${unitId}/users/`, users);
 };
 
 export const removeUserFromUnit = (unitId, userId) => {
   return http.delete(`/users/me/units/${unitId}/users/${userId}`);
 };
+
+/*updateUnitUsers = (unitId, users) => {
+  return http.patch(`/users/me/units/${unitId}/users`, users);
+}*/

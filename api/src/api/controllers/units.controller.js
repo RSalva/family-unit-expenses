@@ -51,15 +51,22 @@ module.exports.detail = async (req, res, next) => {
   if (!unitUserExists) throw(UnitOrUserNotFound);
 
   const unit = await Unit.findOne({ _id: req.params.id })
-    .populate("users");
+    .populate({ 
+      path: "users", 
+      populate: { path: "user", select: "username avatar" }
+    })
+    .populate("expenses");
   if (unit) res.json(unit);
   else next(UnitNotFound);
 };
 
 module.exports.create = async (req, res, next) => {
+  const { users, userId } = req.body;
   let unitUser = await  UnitUser.find({ role: "creator", user: req.sessionUser.id}).populate("unit");
   if (unitUser.some((unitUser) => unitUser.unit.name === req.body.name)) throw UnitAlreadyExists;
 
+  console.log("Data received to create a unit:", req.body);
+  
   const unit = await Unit.create({
     name: req.body.name,
     description: req.body.description,
@@ -71,6 +78,27 @@ module.exports.create = async (req, res, next) => {
     role: "creator",
     joinedAt: req.body.date,
   });
+  
+  if (users && users.length > 0) {
+    req.params.id = unit.id;
+    const addedUsers = [];
+    for (const user of users) {
+      const existingUser = await UnitUser.findOne({ unit: unit.id, user: user.id });
+      if (existingUser) {
+        console.log(`User ${user.id} already exists in the unit.`);
+        continue; // Skip if the user is already in the unit
+      }
+
+      const newUnitUser = await UnitUser.create({
+        user: user.id,
+        unit: unit.id,
+        role: "member",
+        joinedAt: Date.now(),
+      });
+
+      addedUsers.push(newUnitUser);
+    }
+  }
 
   res.status(201).json(unit);
 };
@@ -89,6 +117,11 @@ module.exports.update = async (req, res, next) => {
     req.body.icon = req.file.path;
   }
 
+  const unit = await Unit.findById(req.params.id);
+  if (!unit) {
+    return next(UnitNotFound);
+  }
+
   const updatedUnit = await Unit.findByIdAndUpdate(
     req.params.id,
     {
@@ -100,6 +133,40 @@ module.exports.update = async (req, res, next) => {
   );
   if (updatedUnit) res.status(200).json(updatedUnit);
   else next(UnitNotFound);
+};
+
+module.exports.addUsers = async (req, res, next) => {
+  const { users, userId } = req.body;
+  const unitId = req.params.id;
+  console.log("Req users body", users);
+
+  const unit = await Unit.findById(unitId);
+  if (!unit) throw(UnitNotFound);
+
+  const user = await UnitUser.findOne({ unit: unitId, user: userId });
+  if (user) throw(UserAlreadyExists);
+  
+  if (! await userHasPermission(req.sessionUser.id, unitId, ["admin", "creator"])) throw(ForbiddenAction);
+
+  const addedUsers = [];
+  for (const user of users) {
+    const existingUser = await UnitUser.findOne({ unit: unitId, user: user.id });
+    if (existingUser) {
+      console.log(`User ${user.id} already exists in the unit.`);
+      continue; // Skip if the user is already in the unit
+    }
+
+    const newUnitUser = await UnitUser.create({
+      user: user.id,
+      unit: unitId,
+      role: "member",
+      joinedAt: Date.now(),
+    });
+
+    addedUsers.push(newUnitUser);
+  }
+
+  res.status(201).json(addedUsers);
 };
 
 module.exports.addUser = async (req, res, next) => {
@@ -149,6 +216,60 @@ module.exports.delete = async (req, res, next) => {
   await UnitUser.deleteMany({ unit: unitId });
   await Unit.findByIdAndDelete(unitId);
   res.status(204).send();
+};
+
+module.exports.updateUsers = async (req, res, next) => {
+  const { add = [], remove = [] } = req.body;
+  const unitId = req.params.id;
+
+  const unit = await Unit.findById(unitId);
+  if (!unit) throw UnitNotFound;
+
+  // Ensure the user has permission to modify users in the unit
+  if (!await userHasPermission(req.sessionUser.id, unitId, ["admin", "creator"])) {
+    throw ForbiddenAction;
+  }
+
+  const addedUsers = [];
+  const removedUsers = [];
+
+  // Add users
+  for (const user of add) {
+    const existingUser = await UnitUser.findOne({ unit: unitId, user: user.id });
+    if (existingUser) {
+      console.log(`User ${user.id} already exists in the unit.`);
+      continue; // Skip if the user is already in the unit
+    }
+
+    const newUnitUser = await UnitUser.create({
+      user: user.id,
+      unit: unitId,
+      role: "member",
+      joinedAt: Date.now(),
+    });
+
+    addedUsers.push(newUnitUser);
+  }
+
+  // Remove users (except the creator)
+  for (const userId of remove) {
+    const userUnit = await UnitUser.findOne({ unit: unitId, user: userId });
+
+    if (!userUnit) {
+      console.log(`User ${userId} is not in the unit.`);
+      continue; // Skip if the user is not in the unit
+    }
+
+    if (userUnit.role === "creator") {
+      console.log(`Cannot remove the creator of the unit.`);
+      continue; // Skip if the user is the creator
+    }
+
+    await UnitUser.findOneAndDelete({ unit: unitId, user: userId });
+    removedUsers.push(userId);
+  }
+
+  res.status(200).json({ added: addedUsers, removed: removedUsers });
 };
 
 // Function to check if a user has permission in a unit

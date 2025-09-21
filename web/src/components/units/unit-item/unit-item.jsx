@@ -1,7 +1,9 @@
-function UnitItem({ unit }) {
-  console.log("UnitItem props:", unit); // Debugging
-  return (
-    <div className="card shadow-sm mb-4">
+function UnitItem({ unit, onClick }) {
+   return (
+    <div 
+      className="card shadow-sm mb-4" 
+      onClick={onClick} 
+      style={{ cursor: onClick ? 'pointer' : 'default' }}>
       <div className="card-body">
         {/* Unit Header */}
         <div className="d-flex align-items-center mb-3">
