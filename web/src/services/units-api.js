@@ -29,13 +29,19 @@ export const deleteUnit = (id) => {
 };
 
 export const addUsersToUnit = (unitId, users) => {
-  return http.post(`/users/me/units/${unitId}/users/`, users);
+  console.log("Users add object in units-api", users)
+  return http.post(`/users/me/units/${unitId}/users`, users);
 };
 
 export const removeUserFromUnit = (unitId, userId) => {
   return http.delete(`/users/me/units/${unitId}/users/${userId}`);
 };
 
-/*updateUnitUsers = (unitId, users) => {
+export const removeUsersFromUnit = (unitId, users) => {
+  console.log("Users delete object in units-api", users)
+  return http.post(`/users/me/units/${unitId}/users/delete`, users);
+}
+
+export const updateUnitUsers = (unitId, users) => {
   return http.patch(`/users/me/units/${unitId}/users`, users);
-}*/
+}

@@ -45,6 +45,8 @@ router.delete("/users/me/units/:id", isAuthenticated, units.delete);
 // UNITUSERS CRUD  
 router.post("/users/me/units/:id/users/", isAuthenticated, units.addUsers);
 router.delete("/users/me/units/:id/users/:userId", isAuthenticated, units.removeUser);
+router.post("/users/me/units/:id/users/delete", isAuthenticated, units.removeUsers);
+
 
 // EXPENSES CRUD
 router.post("/users/me/units/:unitId/expenses", isAuthenticated, expenses.create);

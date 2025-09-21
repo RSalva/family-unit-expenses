@@ -138,7 +138,6 @@ module.exports.update = async (req, res, next) => {
 module.exports.addUsers = async (req, res, next) => {
   const { users, userId } = req.body;
   const unitId = req.params.id;
-  console.log("Req users body", users);
 
   const unit = await Unit.findById(unitId);
   if (!unit) throw(UnitNotFound);
@@ -203,6 +202,36 @@ module.exports.removeUser = async (req, res, next) => {
   const userUnit = await UnitUser.findOneAndDelete({ unit: unitId, user: userId });
   if (!userUnit) throw(UserNotInUnit);
   else res.status(204).send();
+};
+
+module.exports.removeUsers = async (req, res, next) => {
+  console.log("Req users body", req.body);
+  const { users, userId } = req.body;
+  const unitId = req.params.id;
+  console.log("Req users body", req.body);
+
+  const unit = await Unit.findById(unitId);
+  if (!unit) throw(UnitNotFound);
+  
+  if (! await userHasPermission(req.sessionUser.id, unitId, ["admin", "creator"])) throw(ForbiddenAction);
+
+  const removedUsers = [];
+
+  for (const user of users) {
+    const userUnit = await UnitUser.findOne({ unit: unitId, user: user.id });
+    
+    if (!userUnit) throw(UserNotInUnit);
+
+    if (userUnit.role === "creator") {
+      console.log(`Cannot remove the creator of the unit.`);
+      continue; // Skip if the user is the creator
+    }
+
+    await UnitUser.findOneAndDelete({ unit: unitId, user: user.id });
+    removedUsers.push(user);
+  }
+
+  res.status(200).json({ removed: removedUsers });
 };
 
 module.exports.delete = async (req, res, next) => {

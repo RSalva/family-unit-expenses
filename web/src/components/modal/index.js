@@ -1,0 +1,1 @@
+export { default as AcceptDeny } from './accept-deny';

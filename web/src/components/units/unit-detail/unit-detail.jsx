@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import * as UnitsApi from "../../../services/units-api";
 import * as UsersApi from "../../../services/users-api";
+import { AcceptDeny } from "../../modal";
 import { useParams } from "react-router";
 import { ClipLoader } from "react-spinners";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router";
 
 function UnitDetail({ className = "", to = "/units", currentUser}) {
   const { id } = useParams();
@@ -13,8 +15,12 @@ function UnitDetail({ className = "", to = "/units", currentUser}) {
   const [searchResults, setSearchResults] = useState([]);
   const [showUserSearch, setShowUserSearch] = useState(false);
   const [usersToAdd, setUsersToAdd] = useState([]);
+  const [usersToRemove, setUsersToRemove] = useState([]);
   const [isEditingName, setIsEditingName] = useState(false); 
-  const [isEditingDescription, setIsEditingDescription] = useState(false); 
+  const [isEditingDescription, setIsEditingDescription] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  
+  const navigate = useNavigate();
   
   const usersPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);
@@ -86,15 +92,25 @@ function UnitDetail({ className = "", to = "/units", currentUser}) {
   );
 
   // Handlers
-  const handleAddUser = (user) => {
-    setSearchResults((prev) => prev.filter((u) => u.id !== user.id));
-    setUsersToAdd((prev) => [...prev, user]);
+  const handleAddUser = (userToAdd) => {
+    setSearchResults((prev) => prev.filter((user) => user.id !== userToAdd.id));
+    setUsersToAdd((prev) => [...prev, userToAdd]);
     
   };
 
   const handleRemoveUser = (userToRemove) => {
     setUsersToAdd((prev) => prev.filter((user) => user.id !== userToRemove.id));
     setSearchResults((prev) => [...prev, userToRemove]);
+  };
+
+  const handleSelectUserToRemove = (user) => {
+    setUsersToRemove((prev) => {
+      if (prev.some((u) => u.id === user.user.id)) {
+        return prev.filter((u) => u.id !== user.user.id);
+      } else {
+        return [...prev, { id: user.user.id, username: user.user.username, role: user.role }];
+      }
+    });
   };
 
   const handleNextPage = () => {
@@ -121,6 +137,17 @@ function UnitDetail({ className = "", to = "/units", currentUser}) {
     setIsEditingDescription((prev) => !prev); 
   };
 
+  const handleDeleteUnit = async () => {
+    try {
+      await UnitsApi.deleteUnit(unit.id);
+      alert("Unit deleted successfully!");
+      navigate("/units");
+    } catch (error) {
+      console.error("Error deleting the unit:", error);
+      alert("Failed to delete the unit. Please try again.");
+    }
+  };
+
   const onSubmit = async (data) => {
     try {
       const { name, description } = data;
@@ -130,12 +157,19 @@ function UnitDetail({ className = "", to = "/units", currentUser}) {
       }
       
       if (usersToAdd.length > 0) {
-        console.log(usersToAdd);
+        console.log("Users to add in unit-detail:", usersToAdd);
         await UnitsApi.addUsersToUnit(id, { users: usersToAdd });
+      }
+      
+      if (usersToRemove.length > 0) {
+        console.log("Users to remove in unit-detail:", usersToRemove);
+        await UnitsApi.removeUsersFromUnit(id, { users: usersToRemove });
       }
 
       alert("Changes applied successfully!");
       setUsersToAdd([]); 
+      setUsersToRemove([]);
+
       const updatedUnit = await UnitsApi.getUnitById(id); 
       setUnit(updatedUnit);
       setIsEditingName(false);
@@ -206,6 +240,29 @@ function UnitDetail({ className = "", to = "/units", currentUser}) {
                   {isEditingDescription ? "Cancel" : <i className="fa fa-pen"></i>}
                 </button>
               </div>
+              {/* Delete Unit Button */}
+              <button
+                type="button"
+                className="btn btn-danger"
+                onClick={() => setShowDeleteModal(true)}
+              >
+                Delete Unit
+              </button>
+
+              {/* Reusable Modal */}
+              {showDeleteModal && (
+                <AcceptDeny
+                  title="Confirm Deletion"
+                  message="Are you sure you want to delete this unit?"
+                  onConfirm={() => {
+                    setShowDeleteModal(false);
+                    handleDeleteUnit();
+                  }}
+                  onCancel={() => setShowDeleteModal(false)}
+                  confirmText="Delete"
+                  cancelText="Cancel"
+                />
+              )}
             </div>
           </div>
 
@@ -216,7 +273,11 @@ function UnitDetail({ className = "", to = "/units", currentUser}) {
               {unit.users.map((user) => (
                 <div
                   key={user.user.id}
-                  className="d-flex align-items-center me-3 mb-2"
+                  className={`d-flex align-items-center me-3 mb-2 ${
+                    usersToRemove.some((u) => u.id === user.user.id) ? "bg-danger text-white" : ""
+                  }`}
+                  onClick={() => handleSelectUserToRemove(user)}
+                  style={{ cursor: "pointer" }}
                 >
                   <img
                     src={user.user.avatar}
@@ -229,6 +290,9 @@ function UnitDetail({ className = "", to = "/units", currentUser}) {
                     <br />
                     <small className="text-muted">Role: {user.role}</small>
                   </div>
+                  {usersToRemove.some((u) => u.id === user.user.id) && (
+                    <i className="fa fa-trash ms-2" title="Selected for deletion"></i>
+                  )}
                 </div>
               ))}
             </div>
@@ -319,7 +383,7 @@ function UnitDetail({ className = "", to = "/units", currentUser}) {
           )}
 
           {/* Submit changes */}
-          {(usersToAdd.length > 0 || description !== unit.description) && (
+          {(usersToAdd.length > 0 || usersToRemove.length > 0 || description !== unit.description || name !== unit.name) && (
             <div className="mb-3">
               <button
                 type="submit"
