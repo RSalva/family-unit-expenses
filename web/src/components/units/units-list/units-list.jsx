@@ -30,13 +30,26 @@ function UnitsList() {
           Create New Unit
         </button>
       </div>
-      <div className="row row-cols-1 row-cols-md-3 g-4">
-        {units?.map((unit) => (
-          <div key={unit.id} className="col">
-            <UnitItem unit={unit} onClick={() => handleUnitClick(unit.id)} />
-          </div>
-        ))}
-      </div>
+      {units.length === 0 ? (
+        <div className="text-center p-4 bg-light rounded shadow-sm">
+          <i className="fa fa-folder-open text-muted fa-3x mb-3"></i>
+          <p className="text-muted">There are no units to show. Create a new unit!</p>
+          <button
+            className="btn btn-primary"
+            onClick={() => navigate("/units/create")}
+          >
+            Create New Unit
+          </button>
+        </div>
+      ) : (
+        <div className="row row-cols-1 row-cols-md-3 g-4">
+          {units.map((unit) => (
+            <div key={unit.id} className="col">
+              <UnitItem unit={unit} onClick={() => handleUnitClick(unit.id)} />
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
