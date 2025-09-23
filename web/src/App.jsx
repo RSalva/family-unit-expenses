@@ -1,9 +1,11 @@
 import { Navigate, Route, Routes } from 'react-router';
-import { LoginPage, UsersPage, ForbiddenPage, NotFoundPage, HomePage, RegisterPage, ProfilePage, UnitsPage, UnitCreationPage, UnitDetailPage } from './pages';
+import { LoginPage, UsersPage, ForbiddenPage, NotFoundPage, HomePage, RegisterPage, ProfilePage, UnitsPage, UnitCreationPage, UnitDetailPage, ExpenseCreationPage } from './pages';
 import { Navbar } from './components/ui';
 import { PrivateRoute } from './guards';
+import { useAuth } from './contexts/auth';
 
 function App() {
+  const { user } = useAuth();
   return (
     <>
       <div>
@@ -22,7 +24,9 @@ function App() {
           <Route path="/forbidden" element={<ForbiddenPage />} />
           <Route path="/not-found" element={<NotFoundPage />} />
 
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={user ? <Navigate replace to="/units" /> : <HomePage />} />
+
+          <Route path="/expenses/create" element={<PrivateRoute><ExpenseCreationPage /></PrivateRoute>} />
 
           <Route path="*" element={<Navigate replace to="/not-found" />} />
         </Routes>

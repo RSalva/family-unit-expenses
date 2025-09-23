@@ -39,8 +39,10 @@ const UserDoesNotBelongToUnit = createError(401, {
 module.exports.create = async (req, res, next) => { 
   const { description, cost, paidBy, users } = req.body;
   const unitId = req.params.unitId;
+  console.log("Request body:", req.body); // Debugging log
+  console.log("Unit ID:", unitId); // Debugging log
 
-  if (!users.includes(paidBy)) throw ExpensePaidByUserOutsideUnit;
+  
 
   const unitUsers = await UnitUser.find({ unit: unitId }).select("user");
   const unitUserIds = unitUsers.map((unitUser) => unitUser.user.toString());
@@ -64,14 +66,18 @@ module.exports.create = async (req, res, next) => {
 };
 
 module.exports.list = async (req, res, next) => {
-  const expenses = await Expense.find({ unit: req.params.unitId });
+  const expenses = await Expense.find({ unit: req.params.unitId })
+    .populate("users");
   res.status(200).json(expenses);
 };
 
 module.exports.detail = async (req, res, next) => {
   const id = req.params.id;
 
-  const expense = await Expense.findById(id);
+  const expense = await Expense.findById(id)
+    .populate("users")
+    .populate("createdBy", "username")
+    .populate("paidBy", "username");
   if (!expense) throw ExpenseNotFound;
 
   if (! await doesExpenseBelongsToUnit(expense, req.params.unitId)) throw ExpenseDoesNotBelongToUnit;

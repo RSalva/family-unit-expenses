@@ -6,6 +6,7 @@ import { useParams } from "react-router";
 import { ClipLoader } from "react-spinners";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
+import { ExpensesList } from "../../expenses";
 
 function UnitDetail({ className = "", to = "/units", currentUser}) {
   const { id } = useParams();
@@ -192,208 +193,213 @@ function UnitDetail({ className = "", to = "/units", currentUser}) {
   }
 
   return (
-    <div className="card shadow-sm mb-4">
-      <div className="card-body">
-        <form onSubmit={handleSubmit(onSubmit)}>
-          {/* Unit Header */}
-          <div className="d-flex align-items-center mb-3">
-            <img
-              src={unit.icon}
-              alt={`${unit.name} icon`}
-              className="rounded-circle me-3"
-              style={{ width: "60px", height: "60px", objectFit: "cover" }}
-            />
-            <div>
-              <div className="d-flex align-items-center">
-                {isEditingName ? (
-                  <input
-                    type="text"
-                    className="form-control form-control-sm me-2"
-                    {...register("name", { required: "Name is required" })}
-                  />
-                ) : (
-                  <h5 className="card-title mb-0">{unit.name}</h5>
-                )}
-                <button
-                  type="button"
-                  className="btn btn-sm btn-outline-secondary"
-                  onClick={toggleEditName}
-                >
-                  {isEditingName ? "Cancel" : <i className="fa fa-pen"></i>}
-                </button>
-              </div>
-              <div className="d-flex align-items-center">
-                {isEditingDescription ? (
-                  <input
-                    type="text"
-                    className="form-control form-control-sm me-2"
-                    {...register("description", { required: "Description is required" })}
-                  />
-                ) : (
-                  <p className="text-muted mb-0">{unit.description}</p>
-                )}
-                <button
-                  type="button"
-                  className="btn btn-sm btn-outline-secondary"
-                  onClick={toggleEditDescription}
-                >
-                  {isEditingDescription ? "Cancel" : <i className="fa fa-pen"></i>}
-                </button>
-              </div>
-              {/* Delete Unit Button */}
-              <button
-                type="button"
-                className="btn btn-danger"
-                onClick={() => setShowDeleteModal(true)}
-              >
-                Delete Unit
-              </button>
-
-              {/* Reusable Modal */}
-              {showDeleteModal && (
-                <AcceptDeny
-                  title="Confirm Deletion"
-                  message="Are you sure you want to delete this unit?"
-                  onConfirm={() => {
-                    setShowDeleteModal(false);
-                    handleDeleteUnit();
-                  }}
-                  onCancel={() => setShowDeleteModal(false)}
-                  confirmText="Delete"
-                  cancelText="Cancel"
-                />
-              )}
-            </div>
-          </div>
-
-          {/* Users Section */}
-          <div className="mb-3">
-            <h6 className="fw-bold">Users</h6>
-            <div className="d-flex flex-wrap">
-              {unit.users.map((user) => (
-                <div
-                  key={user.user.id}
-                  className={`d-flex align-items-center me-3 mb-2 ${
-                    usersToRemove.some((u) => u.id === user.user.id) ? "bg-danger text-white" : ""
-                  }`}
-                  onClick={() => handleSelectUserToRemove(user)}
-                  style={{ cursor: "pointer" }}
-                >
-                  <img
-                    src={user.user.avatar}
-                    alt={`${user.name}'s avatar`}
-                    className="rounded-circle me-2"
-                    style={{ width: "40px", height: "40px", objectFit: "cover" }}
-                  />
-                  <div>
-                    <span className="fw-bold">{user.user.username}</span>
-                    <br />
-                    <small className="text-muted">Role: {user.role}</small>
-                  </div>
-                  {usersToRemove.some((u) => u.id === user.user.id) && (
-                    <i className="fa fa-trash ms-2" title="Selected for deletion"></i>
+    <div className="container mt-4">
+      <div className="card shadow-sm mb-4">
+        <div className="card-body">
+          <form onSubmit={handleSubmit(onSubmit)}>
+            {/* Unit Header */}
+            <div className="d-flex align-items-center mb-4">
+              <img
+                src={unit.icon}
+                alt={`${unit.name} icon`}
+                className="rounded-circle me-3 border border-primary"
+                style={{ width: "80px", height: "80px", objectFit: "cover" }}
+              />
+              <div>
+                <div className="d-flex align-items-center mb-2 gap-2">
+                  {isEditingName ? (
+                    <input
+                      type="text"
+                      className="form-control form-control-sm me-2"
+                      {...register("name", { required: "Name is required" })}
+                    />
+                  ) : (
+                    <h4 className="card-title mb-0 text-primary fw-bold">{unit.name}</h4>
                   )}
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-outline-primary"
+                    onClick={toggleEditName}
+                  >
+                    {isEditingName ? "Cancel" : <i className="fa fa-pen"></i>}
+                  </button>
                 </div>
-              ))}
-            </div>
-          </div>
+                <div className="d-flex align-items-center gap-2">
+                  {isEditingDescription ? (
+                    <input
+                      type="text"
+                      className="form-control form-control-sm me-2"
+                      {...register("description", { required: "Description is required" })}
+                    />
+                  ) : (
+                    <p className="text-muted mb-0">{unit.description}</p>
+                  )}
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-outline-primary"
+                    onClick={toggleEditDescription}
+                  >
+                    {isEditingDescription ? "Cancel" : <i className="fa fa-pen"></i>}
+                  </button>
+                </div>
+                {/* Delete Unit Button */}
+                <button
+                  type="button"
+                  className="btn btn-danger"
+                  onClick={() => setShowDeleteModal(true)}
+                >
+                  Delete Unit
+                </button>
 
-          {/* Toggle User Search */}
-          <button
-            type="button"
-            className="btn btn-outline-primary mb-3"
-            onClick={toggleUserSearch}
-          >
-            {showUserSearch ? "Hide User Search" : "Add Users to the Unit"}
-          </button>
+                {/* Reusable Modal */}
+                {showDeleteModal && (
+                  <AcceptDeny
+                    title="Confirm Deletion"
+                    message="Are you sure you want to delete this unit?"
+                    onConfirm={() => {
+                      setShowDeleteModal(false);
+                      handleDeleteUnit();
+                    }}
+                    onCancel={() => setShowDeleteModal(false)}
+                    confirmText="Delete"
+                    cancelText="Cancel"
+                  />
+                )}
 
-          {/* User Search and List */}
-          {showUserSearch && (
-            <>
-              {/* Search Users */}
-              <div className="input-group mb-2">
-                <span className="input-group-text"><i className="fa fa-user-plus fa-fw"></i></span>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Search user by username"
-                  {...register("userToSearch")}
-                />
               </div>
+            </div>
 
-              {/* Search Results with Pagination */}
-              {paginatedResults.length > 0 && (
-                <>
-                  <ul className="list-group mb-2">
-                    {paginatedResults.map((user) => (
-                      <li key={user.id} className="list-group-item d-flex justify-content-between align-items-center">
-                        {user.username}
-                        <button
-                          type="button"
-                          className="btn btn-sm btn-primary"
-                          onClick={() => handleAddUser(user)}
-                        >
-                          Add
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="d-flex justify-content-between">
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-secondary"
-                      onClick={handlePreviousPage}
-                      disabled={currentPage === 1}
-                    >
-                      Previous
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-secondary"
-                      onClick={handleNextPage}
-                      disabled={currentPage === Math.ceil(searchResults.length / usersPerPage)}
-                    >
-                      Next
-                    </button>
+            {/* Users Section */}
+            <div className="mb-4">
+              <h5 className="fw-bold text-secondary">Users</h5>
+              <div className="d-flex flex-wrap gap-2">
+                {unit.users.map((user) => (
+                  <div
+                    key={user.user.id}
+                    className={`d-flex align-items-center p-3 border rounded shadow-sm ${
+                      usersToRemove.some((u) => u.id === user.user.id) ? "bg-danger text-white" : "bg-light"
+                    }`}
+                    onClick={() => handleSelectUserToRemove(user)}
+                    style={{ cursor: "pointer", minWidth: "250px" }}
+                  >
+                    <img
+                      src={user.user.avatar}
+                      alt={`${user.name}'s avatar`}
+                      className="rounded-circle me-3 border"
+                      style={{ width: "50px", height: "50px", objectFit: "cover" }}
+                    />
+                    <div>
+                      <span className="fw-bold">{user.user.username}</span>
+                      <br />
+                      <small className="text-muted">Role: {user.role}</small>
+                    </div>
+                    {usersToRemove.some((u) => u.id === user.user.id) && (
+                      <i className="fa fa-trash ms-2" title="Selected for deletion"></i>
+                    )}
                   </div>
-                </>
-              )}
-            </>
-          )}
-
-          {/* Selected Users to Add */}
-          {usersToAdd.length > 0 && (
-            <div className="mb-3">
-              <h6>Selected Users to Add:</h6>
-              <ul className="list-group">
-                {usersToAdd.map((user) => (
-                  <li key={user.id} className="list-group-item d-flex justify-content-between align-items-center">
-                    {user.username}
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-danger"
-                      onClick={() => handleRemoveUser(user)}
-                    >
-                      Remove
-                    </button>
-                  </li>
                 ))}
-              </ul>
+              </div>
             </div>
-          )}
 
-          {/* Submit changes */}
-          {(usersToAdd.length > 0 || usersToRemove.length > 0 || description !== unit.description || name !== unit.name) && (
-            <div className="mb-3">
-              <button
-                type="submit"
-                className="btn btn-primary mt-2"
-              >
-                Save Changes
-              </button>
-            </div>
-          )}
-        </form>
+            {/* Toggle User Search */}
+            <button
+              type="button"
+              className="btn btn-outline-primary mb-3"
+              onClick={toggleUserSearch}
+            >
+              {showUserSearch ? "Hide User Search" : "Add Users to the Unit"}
+            </button>
+
+            {/* User Search and List */}
+            {showUserSearch && (
+              <>
+                <div className="input-group mb-2">
+                  <span className="input-group-text"><i className="fa fa-user-plus fa-fw"></i></span>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Search user by username"
+                    {...register("userToSearch")}
+                  />
+                </div>
+
+                {/* Search Results with Pagination */}
+                {paginatedResults.length > 0 && (
+                  <>
+                    <ul className="list-group mb-2">
+                      {paginatedResults.map((user) => (
+                        <li key={user.id} className="list-group-item d-flex justify-content-between align-items-center">
+                          {user.username}
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-primary"
+                            onClick={() => handleAddUser(user)}
+                          >
+                            Add
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="d-flex justify-content-between">
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-secondary"
+                        onClick={handlePreviousPage}
+                        disabled={currentPage === 1}
+                      >
+                        Previous
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-secondary"
+                        onClick={handleNextPage}
+                        disabled={currentPage === Math.ceil(searchResults.length / usersPerPage)}
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </>
+                )}
+              </>
+            )}
+
+            {/* Selected Users to Add */}
+            {usersToAdd.length > 0 && (
+              <div className="mb-3">
+                <h6>Selected Users to Add:</h6>
+                <ul className="list-group">
+                  {usersToAdd.map((user) => (
+                    <li key={user.id} className="list-group-item d-flex justify-content-between align-items-center">
+                      {user.username}
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-danger"
+                        onClick={() => handleRemoveUser(user)}
+                      >
+                        Remove
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {(usersToAdd.length > 0 || usersToRemove.length > 0 || description !== unit.description || name !== unit.name) && (
+              <div className="text-center">
+                <button
+                  type="submit"
+                  className="btn btn-primary mt-3 px-4 py-2 fw-bold"
+                >
+                  Save Changes
+                </button>
+              </div>
+            )}
+          </form>
+          
+          <div className="mb-3">
+            <ExpensesList expenses={unit.expenses} unitId={unit.id} />
+          </div>
+        </div>
       </div>
     </div>
   );

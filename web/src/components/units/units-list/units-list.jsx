@@ -4,7 +4,6 @@ import * as UnitsApi from "../../../services/units-api";
 import { useNavigate, Link } from "react-router";
 
 function UnitsList() {
-  console.l
   const [units, setUnits] = useState([]);
   const navigate = useNavigate();
 
@@ -21,16 +20,23 @@ function UnitsList() {
   };
 
   return (
-    <div className="container mt-5">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h1 className="mb-4">My Units</h1>
-          <Link to="/units/create" className="btn btn-primary">
-            + Create New Unit
-          </Link>
+    <div className="container mt-4">
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h2 className="text-primary">Units</h2>
+        <button
+          className="btn btn-primary"
+          onClick={() => navigate("/units/create")}
+        >
+          Create New Unit
+        </button>
       </div>
-      {units?.map((unit) => (
-        <UnitItem key={unit.id} unit={unit} onClick={() => handleUnitClick(unit.id)} />
-      ))}
+      <div className="row row-cols-1 row-cols-md-3 g-4">
+        {units?.map((unit) => (
+          <div key={unit.id} className="col">
+            <UnitItem unit={unit} onClick={() => handleUnitClick(unit.id)} />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

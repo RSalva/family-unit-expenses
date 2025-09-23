@@ -7,3 +7,4 @@ export { default as RegisterPage } from './register-page';
 export { default as ProfilePage } from './profile-page';
 export { default as UnitDetailPage } from './unit-detail-page';
 export { default as UnitCreationPage } from "./unit-creation-page";
+export { default as ExpenseCreationPage} from "./expense-creation-page";

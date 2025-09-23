@@ -15,7 +15,6 @@ function UnitCreateForm({ className = "", to = "/units", currentUser}) {
   const [showUserSearch, setShowUserSearch] = useState(false);
   const usersPerPage = 5;
 
-  // Get all users when the form loads
   useEffect(() => {
     const listAllUsers = async () => {
       try {
@@ -31,19 +30,18 @@ function UnitCreateForm({ className = "", to = "/units", currentUser}) {
     listAllUsers();
   }, []);
 
-  // Filter users based on the search input
   useEffect(() => {
     if (userToSearch.trim()) {
       const filteredUsers = allUsers.filter(
         (user) =>
           user.username.toLowerCase().includes(userToSearch.trim().toLowerCase()) &&
-          !users.some((addedUser) => addedUser.id === user.id) // Exclude already added users
+          !users.some((addedUser) => addedUser.id === user.id) 
       );
       setSearchResults(filteredUsers);
       setCurrentPage(1);
     } else {
       const filteredUsers = allUsers.filter(
-        (user) => !users.some((addedUser) => addedUser.id === user.id) // Exclude already added users
+        (user) => !users.some((addedUser) => addedUser.id === user.id) 
       );
       setSearchResults(filteredUsers);
     }
@@ -62,7 +60,6 @@ function UnitCreateForm({ className = "", to = "/units", currentUser}) {
     } catch (error) {
       console.error(error);
   
-      // Check if the error is related to the unit name already existing
       if (error.response?.data?.errors?.unit === "Unit already exists") {
         setError("name", { type: "manual", message: "A unit with this name already exists." });
       } else {
@@ -105,7 +102,7 @@ function UnitCreateForm({ className = "", to = "/units", currentUser}) {
   };
 
   const toggleUserSearch = () => {
-    setShowUserSearch((prev) => !prev); // Toggle the visibility of the user search and list
+    setShowUserSearch((prev) => !prev); 
   };
 
   return (
@@ -155,7 +152,6 @@ function UnitCreateForm({ className = "", to = "/units", currentUser}) {
       {/* USER SEARCH AND LIST */}
       {showUserSearch && (
         <>
-          {/* SEARCH USERS */}
           <div className="input-group mb-2">
             <span className="input-group-text"><i className="fa fa-user-plus fa-fw"></i></span>
             <input

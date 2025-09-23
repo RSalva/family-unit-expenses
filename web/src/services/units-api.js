@@ -1,13 +1,5 @@
 import http from './api-service';
 
-// getUnits
-// getUnitById
-// createUnit
-// updateUnit
-// deleteUnit
-// add UserToUnit
-// removeUserFromUnit
-
 export const createUnit = (unit) => {
   return http.post('/users/me/units', unit);
 };

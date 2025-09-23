@@ -5,7 +5,7 @@ function HomePage() {
   return (
     <PageLayout>
       <div className="container text-center mt-5">
-        {/* Hero Section */}
+
         <div className="row justify-content-center">
           <div className="col-md-8">
             <h1 className="display-4 fw-bold">Welcome to Family Unit Expenses</h1>
@@ -15,7 +15,6 @@ function HomePage() {
           </div>
         </div>
 
-        {/* Call-to-Action Buttons */}
         <div className="row justify-content-center mt-4">
           <div className="col-md-4">
             <Link to="/register" className="btn btn-primary btn-lg w-100 mb-3">
@@ -29,7 +28,6 @@ function HomePage() {
           </div>
         </div>
 
-        {/* Features Section */}
         <div className="row justify-content-center mt-5">
           <div className="col-md-10">
             <h2 className="fw-bold">Why Choose Family Unit Expenses?</h2>
